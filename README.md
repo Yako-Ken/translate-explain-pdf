@@ -14,6 +14,18 @@
 
 ## 🇬🇧 English
 
+### Two ways to use this
+
+| | **Claude Skill** (`translate-explain-pdf.skill`) | **Universal Prompt** (`universal/universal_prompt.md`) |
+|---|---|---|
+| Works with | Claude.ai / Claude Code / Cowork | **Any** AI chat — ChatGPT, Gemini, Claude Free, anything |
+| Requires a paid plan? | Currently yes — custom Skills need Claude Pro or above | **No** — works on free tiers too |
+| Needs code execution? | Yes (runs Python + WeasyPrint automatically) | **No** — plain text in, plain text out |
+| Output | Ready-to-download PDF, generated automatically | HTML code you paste into a file yourself, then `Print → Save as PDF` from your browser |
+| Best for | Hands-off automation if you already have Claude Pro | Anyone without a subscription, or who wants to use a different model |
+
+Both produce the exact same visual design and follow the exact same bidi-safety rule — the Universal Prompt is just a manual-conversion version of the same instructions, for when Skills/code execution aren't available.
+
 ### What is this?
 
 `translate-explain-pdf` is a [Claude Skill](https://www.anthropic.com) — a reusable instruction set that teaches Claude how to take **any link to a webpage, article, or technical documentation page** and turn it into a **complete, RTL-formatted Arabic study PDF**, without cutting corners.
@@ -108,6 +120,18 @@ translate-explain-pdf/
 
 ## 🇸🇦 العربية
 
+### طريقتين للاستخدام
+
+| | **Claude Skill** (`translate-explain-pdf.skill`) | **البرومبت العام** (`universal/universal_prompt.md`) |
+|---|---|---|
+| بيشتغل مع | Claude.ai / Claude Code / Cowork | **أي** شات AI — ChatGPT، Gemini، Claude Free، أي حاجة |
+| محتاج اشتراك مدفوع؟ | حاليًا آه — الـ Skills المخصصة محتاجة Claude Pro فما فوق | **لأ** — بيشتغل حتى على الخطط المجانية |
+| محتاج تنفيذ كود؟ | آه (بيشغّل Python + WeasyPrint تلقائي) | **لأ** — نص عادي داخل، نص عادي خارج |
+| الناتج | PDF جاهز للتحميل، بيتولّد تلقائي | كود HTML تلصقه إنت في ملف، وبعدين `Print → Save as PDF` من المتصفح |
+| الأنسب لـ | أتمتة كاملة لو معاك Claude Pro أصلًا | أي حد من غير اشتراك، أو عايز يستخدم موديل تاني |
+
+الاتنين بيطلعوا بنفس التصميم البصري بالظبط وبيتبعوا نفس قاعدة الأمان من الـ bidi — البرومبت العام هو بس نسخة تحويل يدوي من نفس التعليمات، لما الـ Skills أو تنفيذ الكود مش متاحين.
+
 ### إيه ده؟
 
 `translate-explain-pdf` هو [Claude Skill](https://www.anthropic.com) — يعني مجموعة تعليمات قابلة لإعادة الاستخدام بتعلّم Claude إزاي ياخد **أي لينك لصفحة ويب، مقال، أو توثيق تقني** ويحوّله لملف **PDF عربي RTL كامل جاهز للمذاكرة**، من غير اختصار أو تلخيص.
@@ -188,8 +212,10 @@ translate-explain-pdf/
 │   └── html_to_pdf.py        # سكريبت WeasyPrint لتحويل HTML لـ PDF
 ├── references/
 │   └── design_notes.md       # مرجع الكلاسات + تفاصيل قاعدة الأمان من الـ bidi
-└── evals/
-    └── manual_test_log.md    # اللي اتجرب، اللي اتكسر، وإزاي اتحل
+├── evals/
+│   └── manual_test_log.md    # اللي اتجرب، اللي اتكسر، وإزاي اتحل
+└── universal/
+    └── universal_prompt.md   # نسخة تشتغل مع أي موديل، من غير اشتراك، من غير تنفيذ كود
 ```
 
 ### القيود

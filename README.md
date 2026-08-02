@@ -37,6 +37,7 @@ Unlike a generic "summarize this page" prompt, this skill is built for **serious
 - 🌐 **Technical terms stay in English.** Function names, libraries, frameworks, and jargon (`API`, `async/await`, `XADD`...) are kept in English inline, because that's what you'll actually use at work with your team.
 - 💻 **Code blocks are untouched.** The code itself is reproduced exactly as written in the source — only inline comments are translated. If the source page has the same example in multiple programming languages, **all of them are kept**, not just "the most popular one."
 - 🎨 **Visually structured, not a wall of text.** Colored boxes distinguish explanations (blue), practical examples (green), and key term definitions (yellow), with proper RTL headings and styling.
+- 🖼️ **Images and diagrams are embedded, not just described.** If the source page has a meaningful image/diagram, it's fetched, embedded directly in the PDF (as a base64 `<img>`, no external links to break later), and paired with an Arabic explanation box underneath. Falls back to a description-only box if the image can't be fetched. Note: the output is meant for personal study, not redistribution — images carry more copyright sensitivity than text.
 - 🐛 **Bidi-safe by design.** Mixed Arabic/English text inside code comments is a classic source of visually broken, reordered text (a quirk of the Unicode Bidirectional Algorithm). This skill follows a strict, tested rule to avoid it — see [Why this skill exists](#-why-this-skill-exists) below.
 
 ### How it works
@@ -61,13 +62,30 @@ Unlike a generic "summarize this page" prompt, this skill is built for **serious
 3. If "Save skill" isn't available in your workspace, you can still just paste the contents of `SKILL.md` at the start of a conversation, or share a link directly and ask Claude to follow the same workflow.
 4. First run in a fresh environment: Claude will run `scripts/setup.sh` once to install dependencies (Python packages + Arabic fonts) — it's idempotent, so it's safe if it runs more than once.
 
+### 🆓 How to use this for free (no subscription, no Skills)
+
+If you don't have Claude Pro, follow these exact steps — no code execution or subscription needed:
+
+1. Open `universal/universal_prompt.md` from this repo and copy its **entire contents**.
+2. Go to any AI chat you already have free access to (Claude.ai free tier, ChatGPT, Gemini, etc.).
+3. Paste the copied text as your **first message**, then press send.
+4. In your next message, paste the link to the page you want translated.
+5. The model replies with a full HTML code block. Copy it.
+6. Paste the code into a plain text editor (Notepad, TextEdit, VS Code — anything) and save the file with a `.html` extension, e.g. `my-notes.html`.
+7. Open that `.html` file by double-clicking it — it opens in your default browser.
+8. Press `Ctrl+P` (Windows/Linux) or `Cmd+P` (Mac), choose **"Save as PDF"** as the destination, and save.
+
+That's it — no installs, no terminal, no subscription. Steps 6–8 are the only "manual" part, replacing what the Skill automates with code execution.
+
 ### 🚦 Known limitations & status
 
-**This is an early release (v0.1)**, tested end-to-end on a handful of content types — see the [manual test log](evals/manual_test_log.md) for exactly what's been verified and what broke along the way (including the bidi bug and how it was fixed).
+**This is an early release (v0.1).** See the [manual test log](evals/manual_test_log.md) for the full, honest list of what's been verified, what broke along the way (including the bidi bug and how it was fixed), and exactly how each test was run.
 
-- ✅ Tested: heavy multi-language technical docs, plain narrative articles, RTL comparison tables.
-- ❓ Not yet tested: pages with embedded images/figures, mixed-language sources, 100+ page documents, non-English source languages.
-- Depends on `weasyprint` + Arabic fonts being installed in the execution environment — works out of the box in Claude.ai / Cowork / Claude Code (which can run `setup.sh`), but won't work in environments without code execution.
+- ✅ Tested and confirmed working: heavy multi-language technical docs, plain narrative articles, RTL comparison tables, pages with images/diagrams (fetched and embedded directly in the PDF, with an Arabic description box underneath — falls back to description-only if the image can't be fetched), mixed-language sources (English text with embedded original Arabic terms), and the Universal Prompt path end-to-end.
+- ⚠️ Image fetching depends on the runtime's network access to the source domain — confirmed working via `pdfimages` inspection in this test environment (using an allowlisted domain), but general websites may or may not be reachable depending on where you run this. See the test log for details.
+- 📝 Documented but not stress-tested: 100+ page documents (a chunking policy exists in both `SKILL.md` and `universal_prompt.md`, but hasn't been run on a real 100+ page source).
+- ❓ Not yet tested: source languages other than English (e.g. Chinese, Japanese documentation).
+- The Claude Skill depends on `weasyprint` + Arabic fonts being installed in the execution environment — works out of the box in Claude.ai / Cowork / Claude Code (which can run `setup.sh`), but requires a paid plan since custom Skills currently aren't available on the free tier. The Universal Prompt path has none of these requirements.
 - If you hit an edge case that breaks, please open an issue with the source URL — this log gets updated as more cases are tested.
 
 ### License
@@ -143,6 +161,7 @@ translate-explain-pdf/
 - 🌐 **المصطلحات التقنية تفضل بالإنجليزي.** أسماء الدوال، المكتبات، الفريمووركس (`API`, `async/await`, `XADD`...) بتفضل إنجليزي جوه الجملة العربية، لأنك فعليًا هتستخدمها كده مع فريقك في الشغل.
 - 💻 **الكود متلمسوش خالص.** الكود نفسه بيتنسخ زي ما هو بالظبط من المصدر — بس التعليقات (comments) جواه هي اللي بتتترجم. ولو الصفحة الأصلية فيها نفس المثال بأكتر من لغة برمجة، **كل اللغات بتفضل موجودة**، مش بس "الأشهر بينهم".
 - 🎨 **منظّم بصريًا، مش نص سادة.** صناديق ملونة بتفرّق بين الشرح (أزرق)، الأمثلة العملية (أخضر)، وتعريفات المصطلحات المهمة (أصفر)، مع عناوين وتنسيق RTL صحيح.
+- 🖼️ **الصور والرسوم بتتضمّن، مش بس توصف.** لو الصفحة الأصلية فيها صورة/رسم مهم، بيتجاب ويتضمّن مباشرة جوه الـ PDF (كـ `<img>` بصيغة base64، من غير أي روابط خارجية ممكن تتكسر بعدين)، مع صندوق شرح عربي تحته. لو الصورة اتعذر تحميلها، بيرجع لصندوق وصف بس. ملحوظة: الناتج للاستخدام الشخصي في المذاكرة مش للتوزيع — الصور فيها حساسية حقوق نشر أكبر من النص.
 - 🐛 **آمن من مشاكل الـ bidi من الأساس.** خلط عربي/إنجليزي جوه تعليقات الكود من أشهر أسباب تكسير ترتيب النص بصريًا (مشكلة معروفة في خوارزمية الـ Unicode Bidirectional Algorithm). الـ skill ده بيتبع قاعدة صارمة ومُختبرة لتفادي المشكلة دي — التفاصيل في [ليه الـ skill ده موجود أصلًا](#-ليه-الـ-skill-ده-موجود-أصلًا) تحت.
 
 ### إزاي بيشتغل
@@ -167,13 +186,30 @@ translate-explain-pdf/
 3. لو "Save skill" مش متاح في الـ workspace بتاعك، برضه تقدر تلصق محتوى `SKILL.md` في بداية المحادثة، أو تدي Claude اللينك مباشرة وتطلب منه يتبع نفس الخطوات.
 4. أول تشغيل في بيئة جديدة: Claude هيشغّل `scripts/setup.sh` مرة واحدة عشان يثبت المتطلبات (مكتبات بايثون + خطوط عربية) — السكريبت آمن التكرار (idempotent).
 
+### 🆓 إزاي تستخدمها من غير اشتراك (من غير Skills)
+
+لو معندكش Claude Pro، اتبع الخطوات دي بالظبط — من غير أي تنفيذ كود أو اشتراك:
+
+1. افتح ملف `universal/universal_prompt.md` من الريبو ده وانسخ **كل محتواه**.
+2. روح لأي شات AI متاح ليك مجانًا (Claude.ai النسخة المجانية، ChatGPT، Gemini، إلخ).
+3. الصق النص اللي نسخته كـ **أول رسالة**، وابعتها.
+4. في الرسالة اللي بعدها، الصق اللينك بتاع الصفحة اللي عايز تترجمها.
+5. الموديل هيردّلك بكود HTML كامل. انسخه.
+6. الصق الكود في أي محرر نصوص عادي (Notepad، TextEdit، VS Code — أي حاجة) واحفظ الملف بامتداد `.html`، مثلًا `ملاحظاتي.html`.
+7. افتح الملف ده بدبل كليك — هيفتح في المتصفح الافتراضي بتاعك.
+8. دوس `Ctrl+P` (ويندوز/لينكس) أو `Cmd+P` (ماك)، اختار **"Save as PDF"** كوجهة الحفظ، واحفظ.
+
+كده خلاص — من غير تثبيت، من غير ترمينال، من غير اشتراك. الخطوات من 6 لـ 8 هي الجزء اليدوي الوحيد، وهي بديل الأتمتة اللي الـ Skill بتعملها بتنفيذ الكود.
+
 ### 🚦 حالة الـ skill والقيود
 
-**دي نسخة مبكرة (v0.1)**، اتجربت بشكل كامل على كام نوع محتوى — شوف [سجل الاختبارات اليدوية](evals/manual_test_log.md) عشان تعرف بالظبط اللي اتجرب وايه اللي اتكسر في الطريق (بما فيه مشكلة الـ bidi وإزاي اتحلت).
+**دي نسخة مبكرة (v0.1).** شوف [سجل الاختبارات اليدوية](evals/manual_test_log.md) للقائمة الكاملة والصادقة لكل اللي اتجرب، واللي اتكسر في الطريق (بما فيه مشكلة الـ bidi وإزاي اتحلت)، وبالظبط إزاي كل اختبار اتعمل.
 
-- ✅ اتجرب: توثيق تقني ضخم متعدد اللغات، مقالات نثرية عادية، جداول مقارنة RTL.
-- ❓ لسه معملوش تست: صفحات فيها صور/رسوم محتاجة وصف، مصادر بلغات مختلطة، مستندات أكتر من 100 صفحة، مصادر بلغة غير الإنجليزي.
-- بيعتمد على وجود `weasyprint` + خطوط عربية في بيئة التنفيذ — بيشتغل تلقائي في Claude.ai / Cowork / Claude Code (اللي بتقدر تشغّل `setup.sh`)، لكن مش هيشتغل في بيئات من غير تنفيذ كود.
+- ✅ اتجرب وأكّدنا إنه شغال: توثيق تقني ضخم متعدد اللغات، مقالات نثرية عادية، جداول مقارنة RTL، صفحات فيها صور/رسوم (بتتجاب وتتضمّن فعليًا جوه الـ PDF، مع صندوق وصف عربي تحتها — ولو الصورة اتعذر تحميلها بيرجع لخطة الوصف بس)، مصادر بلغة مختلطة (نص إنجليزي فيه مصطلحات عربية أصلية)، والبرومبت العام من الأول للآخر.
+- ⚠️ تحميل الصور بيعتمد على إمكانية وصول بيئة التشغيل لدومين المصدر — اتأكد إنها شغالة فعليًا بفحص `pdfimages` في بيئة الاختبار دي (باستخدام دومين مسموح)، لكن المواقع العادية ممكن تكون متاحة أو محجوبة حسب البيئة اللي بتشغّل فيها الـ skill. التفاصيل في سجل الاختبارات.
+- 📝 موثّق بس لسه معملوش stress-test: مستندات 100+ صفحة (فيه سياسة تقسيم مكتوبة في `SKILL.md` و`universal_prompt.md`، بس لسه معتجربتش على مصدر حقيقي 100+ صفحة).
+- ❓ لسه معملوش تست: مصادر بلغة غير الإنجليزي (زي توثيق صيني أو ياباني).
+- الـ Claude Skill بيعتمد على وجود `weasyprint` + خطوط عربية في بيئة التنفيذ — بيشتغل تلقائي في Claude.ai / Cowork / Claude Code (اللي بتقدر تشغّل `setup.sh`)، لكن محتاج اشتراك مدفوع لأن الـ Skills المخصصة حاليًا مش متاحة في النسخة المجانية. البرومبت العام مالوش أي متطلبات من دي خالص.
 - لو واجهت حالة كسرت الـ skill، افتح issue وحط اللينك بتاع المصدر — السجل ده بيتحدث كل ما تتجرب حالات أكتر.
 
 ### الرخصة
